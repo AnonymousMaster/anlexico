@@ -1,6 +1,5 @@
 package traductor;
 
-import exceptions.LexicalError;
 
 /**
  *
@@ -63,7 +62,7 @@ public class Lex {
      *                             no pertenece al alfabeto o a alguno de los 
      *                             símbolos conocidos
      */
-    public Token next() throws LexicalError {
+    public Token next() throws Exception {
         
         String s = consume();
         Token siguiente;
@@ -76,7 +75,7 @@ public class Lex {
 
         } else {
             String except = "El símbolo "+s+" no es válido";
-            throw new LexicalError(except);
+            throw new Exception(except);
         }
 
         return siguiente;

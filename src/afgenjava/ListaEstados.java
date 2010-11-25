@@ -1,6 +1,6 @@
 package afgenjava;
 
-import exceptions.AutomataException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -110,7 +110,7 @@ public class ListaEstados extends ArrayList<Estado>{
         return false;
     }
     
-    public Estado getEstadoInicial() throws AutomataException{
+    public Estado getEstadoInicial() throws Exception{
         int indice_ini = 0;
         int cant_iniciales = 0;
         for (int i = 0; i < cantidad(); i++) {
@@ -122,11 +122,11 @@ public class ListaEstados extends ArrayList<Estado>{
         if(cant_iniciales == 1){
             return getEstado(indice_ini);
         }else{
-            throw new AutomataException("Solo debe haber un estado incial, y en esta lista existen "+ cant_iniciales);
+            throw new Exception("Solo debe haber un estado incial, y en esta lista existen "+ cant_iniciales);
         }
     }
     
-    public Estado getEstadoFinal() throws AutomataException{
+    public Estado getEstadoFinal() throws Exception{
         int indice_fin = 0;
         int cant_finales = 0;
         for (int i = 0; i < cantidad(); i++) {
@@ -138,14 +138,14 @@ public class ListaEstados extends ArrayList<Estado>{
         if(cant_finales == 1){
             return getEstado(indice_fin);
         }else{
-            throw new AutomataException("Este metodo se usa cuando existe un solo " +
+            throw new Exception("Este metodo se usa cuando existe un solo " +
                     "estado final y en esta lista existen " + cant_finales + 
                     ". Utilize el metodo getEstadosFinales");
         }    
     }
 
     
-    public ListaEstados getEstadosFinales() throws AutomataException{
+    public ListaEstados getEstadosFinales() throws Exception{
         ListaEstados nuevaLista = new ListaEstados();
         for (int i = 0; i < cantidad(); i++) {
             if(getEstado(i).isEstadofinal()){
@@ -170,7 +170,7 @@ public class ListaEstados extends ArrayList<Estado>{
         ListaEstados fin;
         try {
             fin = getEstadosFinales();
-        } catch (AutomataException ex) {
+        } catch (Exception ex) {
             return false;
         }
         

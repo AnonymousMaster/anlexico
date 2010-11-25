@@ -5,7 +5,6 @@
 
 package afgenjava;
 
-import exceptions.AutomataException;
 import traductor.Analizador;
 
 /**
@@ -17,7 +16,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) throws AutomataException{
+    public static void main(String args[]) throws Exception{
         String regex = "(a|b)*";
         String alpha = "ab";
         
@@ -56,7 +55,7 @@ public class Main {
         
     }
     
-    public static Automata unAutomata() throws AutomataException{
+    public static Automata unAutomata() throws Exception{
         String regex = "a*b?(ab|ba)*b?a*";
         String alpha = "ab";
         

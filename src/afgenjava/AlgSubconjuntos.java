@@ -9,8 +9,7 @@
 
 package afgenjava;
 
-import exceptions.AutomataException;
-import graphviz.GraphViz;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -46,7 +45,7 @@ public class AlgSubconjuntos {
     
     
     
-    public Dtrans ejecutar() throws AutomataException{
+    public Dtrans ejecutar() throws Exception{
         Iterator it;
         Token simbolo;
         ListaEstados U;
@@ -171,7 +170,7 @@ public class AlgSubconjuntos {
         return false;
     }
     
-    private ListaEstados estadoSinMarcar() throws AutomataException{
+    private ListaEstados estadoSinMarcar() throws Exception{
         Iterator it = Destados.iterator();
         ListaEstados list_est;
         while (it.hasNext()){
@@ -180,7 +179,7 @@ public class AlgSubconjuntos {
                 return list_est;
             }
         }
-        throw new AutomataException("No hay Lista de Estados sin marcar en Destados.");
+        throw new Exception("No hay Lista de Estados sin marcar en Destados.");
     }
     
     
