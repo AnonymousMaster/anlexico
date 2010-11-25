@@ -1,8 +1,6 @@
 package traductor;
 
 import afgenjava.*;
-import exceptions.LexicalError;
-import exceptions.SyntaxError;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,7 +99,7 @@ public class Analizador {
         try {
             // creamos el analizador léxico
             this.preanalisis = nextSymbol(); // obtenemos el primer símbolo desde el analizador léxico
-        } catch (LexicalError ex) {
+        } catch (Exception ex) {
             
             this.hayErrores = true;            
             this.errMsg = 
@@ -122,7 +120,7 @@ public class Analizador {
      * @param tok Símbolo esperado
      * @throws exceptions.SyntaxError Error de Sintaxis
      */
-    private void Match(String simbolo) throws SyntaxError, LexicalError {
+    private void Match(String simbolo) throws Exception {
         
         Token tok = new Token(simbolo); // se crea un Token temporal para 
                                         // compararlo con preanalisis
@@ -132,7 +130,7 @@ public class Analizador {
             this.Special = tok.getValor();
             this.incPosicion();
         } else {
-            throw new SyntaxError(tok.getValor(),this.getPosicion());
+            throw new Exception(tok.getValor() + this.getPosicion());
         }
     }
 
@@ -157,7 +155,7 @@ public class Analizador {
      * se aborta el análisis. <br><br>
      * @return Token que contiene el símbolo siguiente a procesar
      */
-    private Token nextSymbol() throws LexicalError {
+    private Token nextSymbol() throws Exception{
         Token result = null; 
         result = this.lexico.next();
         return result;        
@@ -206,28 +204,10 @@ public class Analizador {
             if (Aux2 != null) {
                 Aux1.thompson_or(Aux2);
             }
-        } catch (SyntaxError ex) {
-            
-            this.hayErrores = true;  
-            this.errMsg = 
-                    "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n"+
-                    "--> "+ex.getMessage();
-            
-            System.out.println(this.getErrMsg());
-            this.abort();
-        } catch (LexicalError ex) {
-            
-            this.hayErrores = true;  
-            this.errMsg =
-                    "Se produjo un error FATAL en el analizador léxico. La generación del AFN no puede continuar\n"+
-                    "--> "+ex.getMessage();
-            System.out.println(this.getErrMsg());
-            this.abort();
         } catch (Exception ex) {
+            
             this.hayErrores = true;  
-            this.errMsg =
-                    "Se produjo un error FATAL de diseño. La generación del AFN no puede continuar\n"+
-                    "--> "+ex.getMessage();
+            this.errMsg =  "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n";
             System.out.println(this.getErrMsg());
             this.abort();
         }
@@ -247,7 +227,7 @@ public class Analizador {
      * @return null si derivó en vacío, en caso contrario, el automata generado
      * @throws exceptions.SyntaxError
      */
-    private Automata A() throws SyntaxError, LexicalError {        
+    private Automata A() throws Exception {
         try {            
             Token or = new Token("|");            
             
@@ -257,10 +237,9 @@ public class Analizador {
             } else {                 
                 return null;    // si es vacío se analiza en otra producción
             }         
-        } catch (SyntaxError ex) {
+        } catch (Exception ex) {
             this.hayErrores = true;  
-            throw new SyntaxError("se esperaba '|' en lugar de -> "
-                            +this.preanalisis.getValor(),this.getPosicion());            
+            throw new Exception("Error de sintaxis en el símbolo ["+this.getPosicion()+"]: se esperaba '|' en lugar de -> " + this.preanalisis.getValor());
         }
     }
     
@@ -271,7 +250,7 @@ public class Analizador {
      * @throws exceptions.SyntaxError
      * @throws exceptions.LexicalError
      */
-    private Automata resimple() throws SyntaxError, LexicalError {
+    private Automata resimple() throws Exception {
         Automata Aux1 = this.rebasico(); 
         Automata Aux2 = this.B();       
         
@@ -286,7 +265,7 @@ public class Analizador {
      * Producción rebasico. 
      * @return Automata generado luego de derivar la producción
      */
-    private Automata rebasico() throws SyntaxError, LexicalError {
+    private Automata rebasico() throws Exception {
         
         Automata Aux1 = list();
 
@@ -326,7 +305,7 @@ public class Analizador {
      * @throws exceptions.SyntaxError
      * @throws exceptions.LexicalError
      */
-    private Automata B() throws SyntaxError, LexicalError {
+    private Automata B() throws Exception {
         
         String current = preanalisis.getValor();
         Automata result = null;
@@ -340,7 +319,7 @@ public class Analizador {
         return result;
     }
     
-    private Automata list() throws SyntaxError, LexicalError {
+    private Automata list() throws Exception {
         
         Token grupofirst = new Token("(");
         
@@ -351,7 +330,7 @@ public class Analizador {
         }
     }
     
-    private char op() throws SyntaxError, LexicalError {
+    private char op() throws Exception {
         char operador = 'E';        
         
         if (preanalisis.getValor().compareTo("") != 0) {
@@ -374,21 +353,22 @@ public class Analizador {
         return operador;
     }
     
-    private Automata grupo() throws SyntaxError, LexicalError {
+    private Automata grupo() throws Exception {
         try {
             this.Match("(");
-        } catch (SyntaxError ex) {
+        } catch (Exception ex) {
             this.hayErrores = true;  
-            throw new SyntaxError("se esperaba el símbolo -> '('",this.getPosicion());
+            throw new Exception("se esperaba el símbolo -> '('" );
+
         }
         
         Automata Aux1 = this.RE();
         
         try {
             this.Match(")");
-        } catch (SyntaxError ex) {
+        } catch (Exception ex) {
             this.hayErrores = true;  
-            throw new SyntaxError("se esperaba el símbolo -> ')'",this.getPosicion());
+            throw new Exception("se esperaba el símbolo -> ')'");
         }
         
         return Aux1;
@@ -398,19 +378,17 @@ public class Analizador {
      * 
      * @return
      */
-    private Automata leng() throws LexicalError {
+    private Automata leng() throws Exception {
         Automata nuevo = null;
         try {
             if (preanalisis.getTipo() != TipoToken.FIN) {
                 nuevo = new Automata(preanalisis.getValor(),TipoAutomata.AFN);
                 this.Match(preanalisis.getValor());
             }
-        } catch (LexicalError ex) {
-            this.hayErrores = true;  
-            throw new LexicalError("Error Léxico en [" + this.getPosicion() + "]: el símbolo no pertenece al alfabeto");
         } catch (Exception ex) {
             this.hayErrores = true;  
-            throw new LexicalError("Error Léxico en [" + this.getPosicion() + "]: "+ex.getMessage());
+            throw new Exception("Error Léxico en [" + this.getPosicion() + "]: el símbolo no pertenece al alfabeto");
+        
         }
         
         return nuevo;
@@ -430,7 +408,7 @@ public class Analizador {
         try {
             // creamos el analizador léxico
             this.preanalisis = nextSymbol(); // obtenemos el primer símbolo desde el analizador léxico
-        } catch (LexicalError ex) {
+        } catch (Exception ex) {
             this.hayErrores = true;
             this.errMsg = 
                     "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n"+

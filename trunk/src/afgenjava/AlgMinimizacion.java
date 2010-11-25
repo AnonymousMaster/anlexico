@@ -5,7 +5,6 @@
 
 package afgenjava;
 
-import exceptions.AutomataException;
 import java.util.*;
 
 /**
@@ -27,7 +26,7 @@ public class AlgMinimizacion {
  **/ 
 
     
-   public Automata minimizar() throws AutomataException{
+   public Automata minimizar() throws Exception{
        ArrayList<ListaEstados> anterior = new ArrayList<ListaEstados>();
        ArrayList<ListaEstados> actual = new ArrayList<ListaEstados>();
        
