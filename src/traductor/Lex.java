@@ -95,15 +95,7 @@ public class Lex {
     }
     
     
-    /**
-     * Método que consume un carácter de la expresión regular. Si retorna la 
-     * cadena vacía es porque ya no hay nada que consume. <br> <br>
-     * 
-     * Consume consiste en extraer la primera letra de la expresión regular
-     * y devolverla como un String.
-     * 
-     * @return El siguiente caracter en la expresión regular
-     */
+
     private String consume() {
         
         String consumido = "";

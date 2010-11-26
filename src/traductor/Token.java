@@ -10,7 +10,7 @@ package traductor;
 public class Token  {
     
     
-    private TipoToken tipo;
+    private String tipo;
     
     
     private String valor;
@@ -24,14 +24,14 @@ public class Token  {
      */
     public Token(String simbolo) {
         this.valor = simbolo;
-        this.setTipo(simbolo);
+        this.setTipoS(simbolo);
     }
 
     /**
      * Función que retorna el tipo de token actual
      * @return Retorna el tipo de token
      */
-    public TipoToken getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
@@ -47,7 +47,7 @@ public class Token  {
      * Establece el tipo de token
      * @param tipo Tipo del token actual
      */
-    public void setTipo(TipoToken tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
@@ -78,33 +78,33 @@ public class Token  {
         }
     }
 
-    private void setTipo(String simbolo) {
+    private void setTipoS(String simbolo) {
         
         if (simbolo.isEmpty()) {
-            this.tipo = TipoToken.FIN;
+            this.tipo = "FIN";
         } else {
 
             switch (simbolo.charAt(0)) {
                 case '*':
-                    this.tipo = TipoToken.KLEENE;
+                    this.tipo = "KLEENE";
                     break;
                 case '+':
-                    this.tipo = TipoToken.PLUS;
+                    this.tipo = "PLUS";
                     break;
                 case '?':
-                    this.tipo = TipoToken.CEROUNO;
+                    this.tipo = "CEROUNO";
                     break;
                 case '|':
-                    this.tipo = TipoToken.OR;
+                    this.tipo = "OR";
                     break;
                 case '(':
-                    this.tipo = TipoToken.PARI;
+                    this.tipo = "PARI";
                     break;
                 case ')':
-                    this.tipo = TipoToken.PARD;
+                    this.tipo = "PARD";
                     break;
                 default:
-                    this.tipo = TipoToken.ALFA;
+                    this.tipo = "ALFA";
                     this.valor = simbolo;
                     break;
             }

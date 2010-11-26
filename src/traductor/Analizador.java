@@ -166,7 +166,7 @@ public class Analizador {
         this.automata = this.RE();
         
         if (!this.isHayErrores()) {
-            if (preanalisis.getTipo() != TipoToken.FIN) {
+            if (!(preanalisis.getTipo().equals("FIN"))) {
                 this.hayErrores = true; 
                 this.errMsg = "Quedaron caracteres sin analizar debido al siguiente Token no esperado["+
                         this.getPosicion()+"]: "+preanalisis.getValor();
@@ -311,7 +311,7 @@ public class Analizador {
         String current = preanalisis.getValor();
         Automata result = null;
        
-        if ( (preanalisis.getTipo() != TipoToken.FIN) &&
+        if ( !(preanalisis.getTipo().equals("FIN")) &&
              (this.alfabeto.contains(current) || current.compareTo("(")==0)
            ) {
             result = this.resimple();
@@ -382,7 +382,7 @@ public class Analizador {
     private Automata leng() throws Exception {
         Automata nuevo = null;
         try {
-            if (preanalisis.getTipo() != TipoToken.FIN) {
+            if (!(preanalisis.getTipo().equals("FIN")) ){
                 nuevo = new Automata(preanalisis.getValor(),TipoAutomata.AFN);
                 this.Match(preanalisis.getValor());
             }
