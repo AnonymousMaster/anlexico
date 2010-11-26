@@ -17,7 +17,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String args[]) throws Exception{
-        String regex = "(a|b)*";
+        String regex = "(a|b)*abb";
         String alpha = "ab";
         
         System.out.println("Testing: Analizador.java (testAfGen)");
