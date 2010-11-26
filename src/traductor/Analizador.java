@@ -1,8 +1,8 @@
 package traductor;
 
 import afgenjava.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+
 
 /**
  * El traductor es el encargado de implementar los procedimientos necesarios
@@ -49,7 +49,7 @@ public class Analizador {
     /**
      * Alfabeto sobre el cual está definida la expresión regular.
      */
-    private Alfabeto alfabeto;
+    private  ArrayList<String> alfabeto;
     
     /**
      * Automata en el cual se guardará el resultado final de la traducción. 
@@ -93,8 +93,9 @@ public class Analizador {
      */
     public Analizador(String regex, String alfabeto) {
         this.setPosicion(0);
-        this.regex = regex;        
-        this.alfabeto = new Alfabeto(alfabeto);        
+        this.regex = regex;
+        this.alfabeto = new ArrayList<String>();
+        this.setAlfabetoString(alfabeto);
         this.lexico = new Lex(regex, alfabeto); // creamos el analizador léxico
         try {
             // creamos el analizador léxico
@@ -311,7 +312,7 @@ public class Analizador {
         Automata result = null;
        
         if ( (preanalisis.getTipo() != TipoToken.FIN) &&
-             (this.alfabeto.contiene(current) || current.compareTo("(")==0)
+             (this.alfabeto.contains(current) || current.compareTo("(")==0)
            ) {
             result = this.resimple();
         }
@@ -428,16 +429,24 @@ public class Analizador {
         this.preanalisis = preanalisis;
     }
 
-    public Alfabeto getAlfabeto() {
+    public ArrayList<String> getAlfabeto() {
         return alfabeto;
     }
 
-    public void setAlfabeto(Alfabeto alfabeto) {
+    public void setAlfabeto(ArrayList<String> alfabeto) {
         this.alfabeto = alfabeto;
     }
 
     public void setAlfabetoString(String alpha) {
-        this.alfabeto = new Alfabeto(alpha);
+        char a[] = new char[alpha.length()];
+        a = alpha.toCharArray();
+        java.util.Arrays.sort(a);
+       this.alfabeto.removeAll(alfabeto);
+       for (int i = 0; i < alpha.length(); i++) {
+            if (! this.alfabeto.contains(a[i]+ "")) {
+                this.alfabeto.add(a[i]+ "");
+            }
+        }
     }
     public Automata getAutomata() {
         return automata;

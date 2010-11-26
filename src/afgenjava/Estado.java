@@ -1,7 +1,6 @@
 package afgenjava;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import traductor.Token;
 
 /**

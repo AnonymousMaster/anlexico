@@ -9,14 +9,9 @@
 
 package afgenjava;
 
-import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
 import traductor.Token;
 
 /**
