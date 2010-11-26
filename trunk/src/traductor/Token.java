@@ -7,7 +7,7 @@ package traductor;
  * @author Cristhian Parra ({@link cdparra@gmail.com})
  * @author Fernando Mancía ({@link fernandomancia@gmail.com})
  */
-public class Token implements Comparable<Token> {
+public class Token  {
     
     
     private TipoToken tipo;

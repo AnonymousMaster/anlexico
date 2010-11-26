@@ -1,5 +1,7 @@
 package traductor;
 
+import java.util.ArrayList;
+
 
 /**
  *
@@ -21,7 +23,7 @@ public class Lex {
      * En conjunto con la propiedad "specials" forman la "Tabla de Símbolos" 
      * del traductor
      */
-    private Alfabeto Alpha;    
+    private ArrayList<String> Alpha;
     
     /**
      * Símbolos especiales del lenguaje
@@ -35,7 +37,18 @@ public class Lex {
      */
     public Lex(String regex, String alfabeto) {
         this.regex = new StringBuffer(regex);
-        this.Alpha = new Alfabeto(alfabeto);
+        this.Alpha = new ArrayList<String>() ;
+
+        char a[] = new char[alfabeto.length()];
+        a = alfabeto.toCharArray();
+        java.util.Arrays.sort(a);
+
+       for (int i = 0; i < alfabeto.length(); i++) {
+            if (! this.Alpha.contains(a[i]+ "")) {
+                Alpha.add(a[i]+ "");
+            }
+        }
+
         this.specials = "*+?|()";
     }
     
@@ -46,7 +59,7 @@ public class Lex {
      * @param regex Expresión regular que se quiere analizar
      * @param alfabeto Objeto Alfabeto que contiene la lista completa de símbolos del mismo
      */
-    public Lex(String regex, Alfabeto alfabeto) {
+    public Lex(String regex, ArrayList<String> alfabeto) {
         this.regex = new StringBuffer(regex);
         this.Alpha = alfabeto;
         this.specials = "*+?|()";
@@ -70,7 +83,7 @@ public class Lex {
         if (s.equalsIgnoreCase(" ") || s.equalsIgnoreCase("\t")) {
             siguiente = next();         // Los espacios y tabuladores se ignoran            
 
-        } else if (this.specials.indexOf(s) >= 0 || this.Alpha.contiene(s) || s.length() == 0) {
+        } else if (this.specials.indexOf(s) >= 0 || this.Alpha.contains(s) || s.length() == 0) {
             siguiente = new Token(s);   // se procesan los simbolos del alfabeto o especiales
 
         } else {
@@ -108,7 +121,7 @@ public class Lex {
      * Obtener el Alfabeto utilizado
      * @return Alpha El Alfabeto completo utilizado
      */
-    public Alfabeto getAlpha() {
+    public ArrayList<String> getAlpha() {
         return Alpha;
     }
 
