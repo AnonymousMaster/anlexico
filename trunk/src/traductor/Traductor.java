@@ -163,7 +163,6 @@ public class Traductor {
         if (!(this.hayErrores) ){
             this.setAutomata(Aux1); // Actualizar el Automata Global
             Aux1.setAlpha(this.alfabeto);
-            Aux1.setRegex(this.regex);
         }
         return Aux1;
     }
