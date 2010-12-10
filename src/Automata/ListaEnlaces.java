@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package afgenjava;
+package Automata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +18,6 @@ import java.util.Iterator;
  *   el símbolo del alfabeto como clave de cada enlace. 
  * 
  * 
- * @author Cristhian Parra ({@link cdparra@gmail.com})
- * @author Fernando Mancía ({@link fernandomancia@gmail.com})
  */
 public class ListaEnlaces extends ArrayList<Enlace> {
  

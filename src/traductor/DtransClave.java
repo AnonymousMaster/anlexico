@@ -7,9 +7,9 @@
  * and open the template in the editor.
  */
 
-package afgenjava;
+package traductor;
 
-import traductor.Token;
+import Automata.ListaEstados;
 
 /**
  * Clase DtransClave, 
@@ -18,8 +18,6 @@ import traductor.Token;
  *              1 (una) lista de estados
  *              1 (un) token
  * 
- * @author Cristhian Parra ({@link cdparra@gmail.com})
- * @author Fernando Mancia ({@link fernandomancia@gmail.com})
  */
 public class DtransClave {
     

@@ -1,4 +1,4 @@
-package afgenjava;
+package Automata;
 
 
 import java.util.ArrayList;

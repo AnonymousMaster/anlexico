@@ -1,12 +1,12 @@
-package afgenjava;
+package Automata;
+import Automata.Enlace;
+import Automata.Estado;
+import Automata.ListaEnlaces;
+import Automata.ListaEstados;
 import java.util.*;
 
 
-/**
- *
- * @author Cristhian Parra ({@link cdparra@gmail.com})<br>
- * @author Fernando Mancia ({@link fernandomancia@gmail.com})
- */
+
 public class Automata {
         
 /*------------------------ ATRIBUTOS ------------------------*/
@@ -34,7 +34,7 @@ public class Automata {
      *  <li>AFDMin (Automata Finito Determinístico Mínimo) </li>
      * </ul>
      */
-    private TipoAutomata tipo;
+    private String tipo;
     
     // Los siguientes atributos podríán ser eliminados
     
@@ -48,7 +48,7 @@ public class Automata {
      */
     private ArrayList<String> alpha;    
     
-    private String empty = CONSTANS.getVacio();
+    private String empty = "(vacio)";
   
     
     // VARIABLES AUXILIARES
@@ -93,7 +93,7 @@ public class Automata {
      * @param simbolo Expresion regular simple (de un solo caracter)
      * @param tipo Especificación del tipo de automata en construcción
      */
-    public Automata(String simbolo, TipoAutomata tipo) {
+    public Automata(String simbolo, String tipo) {
         this(simbolo);
         this.tipo = tipo;
     }
@@ -578,49 +578,12 @@ public class Automata {
     }
     
     
-    /**
-     * Genera un automata sencillo de prueba. 
-     * @return
-     */
-    public static Automata dameAutomata(){
-        Automata A1 = new Automata();
-        A1.estados.insertar(new Estado(0,true,false, false));
-        A1.estados.insertar(new Estado(1,true,false, false));
-        A1.estados.insertar(new Estado(2,true,false, false));
-        A1.estados.insertar(new Estado(3,true,false, false));
-        A1.estados.insertar(new Estado(4,true,false, false));
-        A1.estados.insertar(new Estado(5,true,false, false));
-        
-        //Estado 0
-        A1.estados.getEstadoById(0).addEnlace( new Enlace(A1.estados.getEstadoById(0), 
-                                           A1.estados.getEstadoById(1), "a"));
-        
-        A1.estados.getEstadoById(0).addEnlace( new Enlace(A1.estados.getEstadoById(0), 
-                                           A1.estados.getEstadoById(2), "b"));
-        
-        
-        //Estado 1 y 2
-        A1.estados.getEstadoById(1).addEnlace( new Enlace(A1.estados.getEstadoById(1), 
-                                           A1.estados.getEstadoById(3), "a"));
-        
-        A1.estados.getEstadoById(2).addEnlace( new Enlace(A1.estados.getEstadoById(2), 
-                                           A1.estados.getEstadoById(4), "a"));
-        
-        
-        //Estado 3 y 4
-        A1.estados.getEstadoById(3).addEnlace( new Enlace(A1.estados.getEstadoById(3), 
-                                           A1.estados.getEstadoById(5), "b"));
-        
-        A1.estados.getEstadoById(4).addEnlace( new Enlace(A1.estados.getEstadoById(4), 
-                                           A1.estados.getEstadoById(5), "a"));
-        return A1;
-    }
-
-    public TipoAutomata getTipo() {
+   
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoAutomata tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

@@ -7,21 +7,22 @@
  * and open the template in the editor.
  */
 
-package afgenjava;
+package traductor;
 
 
+import Automata.Estado;
+import Automata.Enlace;
+import Automata.ListaEstados;
+import Automata.Automata;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
-import traductor.Analizador;
-import traductor.Token;
+
 
 /**
  *
  * @author Administrador
  */
-public class AlgSubconjuntos {
+public class Subconjuntos {
     Automata AFN;
     /**
      *  AFD, Matriz final que representa el AFD.
@@ -37,7 +38,7 @@ public class AlgSubconjuntos {
     
     
     /** Creates a new instance of AlgSubconjuntos */
-    public AlgSubconjuntos(Automata AFN) {
+    public Subconjuntos(Automata AFN) {
         this.AFN = AFN;
         dtrans = new Dtrans();
         Destados = new ArrayList();
@@ -94,7 +95,7 @@ public class AlgSubconjuntos {
         ListaEstados listaNueva = null;
         while(it.hasNext()){
             Enlace e = (Enlace) it.next();
-            if(e.getEtiqueta().compareTo(CONSTANS.getVacio()) == 0){
+            if(e.getEtiqueta().compareTo("(vacio)") == 0){
                 listaNueva = e_cerradura(e.getDestino(), listaActual);
                 listaActual = concatListas(listaActual, listaNueva );
                 
