@@ -39,8 +39,7 @@ public class Main {
         Traductor t = new Traductor(regex, alpha);
         Automata A = t.traducir();
         A.setAlpha(t.getAlfabeto());
-        A.setRegex(t.getRegex());
-        
+       
         String salida_simple = A.imprimir();
         System.out.println(salida_simple);
         

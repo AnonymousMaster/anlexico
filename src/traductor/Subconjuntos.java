@@ -249,8 +249,6 @@ public class Subconjuntos {
         visitarRecursivo(inicial);
         
         Automata AFDNEW = new Automata();
-        AFDNEW.setAlpha(AFD.getAlpha());
-        AFDNEW.setRegex(AFD.getRegex());
                 
         Iterator it = AFD.getEstados().getIterator();
         while(it.hasNext()){
