@@ -35,7 +35,6 @@ public class Main {
         //String regex = "(a|b)*abb";
         //String alpha = "ab";
         
-        System.out.println("Testing: Analizador.java (testAfGen)");
         
         Traductor t = new Traductor(regex, alpha);
         Automata A = t.traducir();
@@ -58,7 +57,20 @@ public class Main {
         Automata AFDM = algMin.minimizar();
         System.out.println("\nAFDM\n_____\n");
         System.out.println(AFDM.imprimir());
-        
+
+        System.out.print("Desea validar una cadena de entrada? : S/N ");
+        String sn = ini.readLine();
+        if (sn.equalsIgnoreCase("S")){
+             System.out.print("Introduzca la cadena que desea validar: ");
+             String cadena = ini.readLine();
+             Simulacion sim = new Simulacion(cadena, A);
+             if (sim.validar())
+                   System.out.println("La cadena es valida.");
+             else
+                 System.out.println("La cadena no es valida.");
+        }
+
+
     }
 
 }
