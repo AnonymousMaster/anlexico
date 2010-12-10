@@ -3,8 +3,12 @@
  * and open the template in the editor.
  */
 
-package afgenjava;
+package traductor;
 
+import Automata.Estado;
+import Automata.Enlace;
+import Automata.ListaEstados;
+import Automata.Automata;
 import java.util.*;
 
 /**

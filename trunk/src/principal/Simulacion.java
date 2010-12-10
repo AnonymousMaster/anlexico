@@ -3,8 +3,13 @@
  * and open the template in the editor.
  */
 
-package afgenjava;
+package principal;
 
+
+import Automata.Estado;
+import Automata.Enlace;
+import Automata.ListaEstados;
+import Automata.Automata;
 import java.util.ArrayList;
 import java.util.Stack;
 import traductor.*;
@@ -63,7 +68,7 @@ public class Simulacion {
     public Estado getEstadoFinal() {
         Estado result = null; 
         
-        if (this.automata.getTipo() == TipoAutomata.AFN) {
+        if (this.automata.getTipo().equals("AFN")) {
             // @TODO
         } else {
             if (estadosPath != null) {
@@ -80,7 +85,7 @@ public class Simulacion {
     public Estado getEstadoPreFinal() {
         Estado result = null; 
         
-        if (this.automata.getTipo() == TipoAutomata.AFN) {
+        if (this.automata.getTipo().equals("AFN") ){
             // @TODO
         } else {
             if (estadosPath != null) {
@@ -104,7 +109,7 @@ public class Simulacion {
     public boolean validar() {
         boolean exito = true;
         
-        if (this.automata.getTipo() == TipoAutomata.AFN) {
+        if (this.automata.getTipo().equals("AFN")) {
             exito = this.validar_AFN();
         } else {
             exito = this.validar_AFD();
@@ -147,7 +152,7 @@ public class Simulacion {
         
         // Si no hay ningún enlace al símbolo, buscamos algún vacío. 
         // Solo se aplica a los AFNs
-        if (path == null && this.automata.getTipo() == TipoAutomata.AFN) {
+        if (path == null && this.automata.getTipo().equals("AFN")) {
             ArrayList<Enlace> emptys = current_state.getEnlacesVacios();
             
             for (Enlace enlace : emptys) {                
@@ -180,7 +185,7 @@ public class Simulacion {
     private boolean validar_AFN() {
         boolean exito = true; 
         
-        AlgSubconjuntos subc = new AlgSubconjuntos(this.automata);
+        Subconjuntos subc = new Subconjuntos(this.automata);
         ListaEstados S = new ListaEstados();
         S = subc.e_cerradura(this.automata.getInicial(), S);
         String c = this.sigCar();

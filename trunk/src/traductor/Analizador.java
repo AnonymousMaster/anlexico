@@ -1,478 +1,121 @@
 package traductor;
 
-import afgenjava.*;
 import java.util.ArrayList;
 
 
 /**
- * El traductor es el encargado de implementar los procedimientos necesarios
- * para llevar a cabo el proceso de traducción <br> <br>
- * 
- * El traductor está basado en el siguiente BNF para definir un lenguaje de 
- * expresiones regulares. <br><br>
- * <ol TYPE=i>
- *   <li>&nbsp RE => resimple A         </li>
- *   <li>&nbsp A  => “|” resimple A | Є </li>
- *   <li>&nbsp resimple => rebasico B   </li>
- *   <li>&nbsp B => rebasico B | Є      </li>
- *   <li>&nbsp rebasico => list op      </li>
- *   <li>&nbsp op => * | + | ? | Є      </li>
- *   <li>&nbsp list => grupo | leng     </li>
- *   <li>&nbsp grupo => “(” RE “)”      </li>
- *   <li>&nbsp leng => [alfabeto del lenguaje] </li>
- * </ol> <br><br>
- * 
- * Se implementa un Traductor Dirigido por la Sintaxis que sigue este BNF y 
- * produce el automata basándose en las construcciones de Thompson. <br><br>
- * 
- * 
- * @author Cristhian Parra ({@link cdparra@gmail.com})
- * @author Fernando Mancia ({@link fernandomancia@gmail.com})
+ *
+ * Analizador Léxico del traductor dirigido por sintaxis de expresiones regulares
+ * a AFNs
+
  */
 public class Analizador {
- 
-    /**
-     * Analizador Lexico
-     */
-    private Lex lexico;
     
     /**
-     * Expresión regular a traducir
+     * Buffer de String que contiene la expresión regular a analizar
      */
-    private String regex;
+    private StringBuffer regex;
     
     /**
-     * Token que contiene el simbolo que se está procesando actualmente
+     * Lista de caracteres que conforman el alfabeto 
      */
-    private Token preanalisis;
+    private ArrayList<String> Alpha;
     
     /**
-     * Alfabeto sobre el cual está definida la expresión regular.
+     * Símbolos especiales del lenguaje
      */
-    private  ArrayList<String> alfabeto;
+    private String specials;     
     
     /**
-     * Automata en el cual se guardará el resultado final de la traducción. 
-     * Se trata de un Automata del tipo AFN. 
-     */
-    private Automata automata;
-    
-    /**
-     * Simbolo especial utilizado para guardar recordar el símbolo operador
-     * consumido por una producción, cuando se deba aplicar la misma en una 
-     * producción superior
-     */
-    private String Special;
-    
-    /**
-     * Contador de caracteres procesados
-     */
-    private int posicion;
-    
-    /**
-     * Flag que indica la existencia o no de errores al final de la traducción
-     */
-    private boolean hayErrores = false;
-
-    /**
-     * Flag que indica la existencia o no de errores al final de la traducción
-     */
-    private String errMsg = ""; 
-    /**
-     * Constructor vacío de la clase <code>Analizador</code>
-     */
-    public Analizador() {
-    }
-
-    /**
-     * Constructor del <code>Analizador</code> Sintáctico a partir de la 
-     * expresión regular y el alfabeto de entrada. 
-     * 
-     * @param regex Expresión regular cuyo AFN queremos generar
-     * @param alfabeto Alfabeto sobre el cual está definida la expresión regular
+     * Constructor de la clase del analizador léxico
      */
     public Analizador(String regex, String alfabeto) {
-        this.setPosicion(0);
-        this.regex = regex;
-        this.alfabeto = new ArrayList<String>();
-        this.setAlfabetoString(alfabeto);
-        this.lexico = new Lex(regex, alfabeto); // creamos el analizador léxico
-        try {
-            // creamos el analizador léxico
-            this.preanalisis = nextSymbol(); // obtenemos el primer símbolo desde el analizador léxico
-        } catch (Exception ex) {
-            
-            this.hayErrores = true;            
-            this.errMsg = 
-                    "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n"+
-                    "--> "+ex.getMessage();
-            
-            System.out.println(this.getErrMsg());
-            this.abort();
-        }
-        automata = new Automata();
-        automata.setTipo(TipoAutomata.AFN);
-    }
+        this.regex = new StringBuffer(regex);
+        this.Alpha = new ArrayList<String>() ;
 
+        char a[] = new char[alfabeto.length()];
+        a = alfabeto.toCharArray();
+        java.util.Arrays.sort(a);
+
+       for (int i = 0; i < alfabeto.length(); i++) {
+            if (! this.Alpha.contains(a[i]+ "")) {
+                Alpha.add(a[i]+ "");
+            }
+        }
+
+        this.specials = "*+?|()";
+    }
+    
+    
     /**
-     * Implementación del procedimiento que se encarga de parear el símbolo de
-     * preanálisis actual con la entrada esperada según la sintaxis del lenguaje
-     * 
-     * @param tok Símbolo esperado
-     * @throws exceptions.SyntaxError Error de Sintaxis
+     * Constructor de la clase del analizador léxico que recibe un alfabeto ya creado
      */
-    private void Match(String simbolo) throws Exception {
+    public Analizador(String regex, ArrayList<String> alfabeto) {
+        this.regex = new StringBuffer(regex);
+        this.Alpha = alfabeto;
+        this.specials = "*+?|()";
+    }
+    
+    /**
+     *consume un elemento de la entrada, lo procesa si y solo si, es un caracter especial o un simbolo valido del alfabeto
+     * y crea un token a partir de el y lo devuelve
+     */
+    public Token next() throws Exception {
+       String s = "";
+
+        if (this.regex.length() > 0) {
+            s = Character.toString( this.regex.charAt(0) );
+            this.regex.deleteCharAt(0);
+        }
+        ;
+        Token siguiente;
         
-        Token tok = new Token(simbolo); // se crea un Token temporal para 
-                                        // compararlo con preanalisis
-        
-        if ( getPreanalisis().compareTo(tok) == 0 ) {
-            this.setPreanalisis(this.nextSymbol());
-            this.Special = tok.getValor();
-            this.incPosicion();
+        if (s.equalsIgnoreCase(" ") || s.equalsIgnoreCase("\t")) {
+            siguiente = next();         // Los espacios y tabuladores se ignoran            
+
+        } else if (this.specials.indexOf(s) >= 0 || this.Alpha.contains(s) || s.length() == 0) {
+            siguiente = new Token(s);   // se procesan los simbolos del alfabeto o especiales
+
         } else {
-            throw new Exception(tok.getValor() + this.getPosicion());
+            String except = "El símbolo "+s+" no es válido";
+            throw new Exception(except);
         }
+
+        return siguiente;
+    }
+    
+
+    
+    /**
+     * Obtener el Alfabeto utilizado
+     * @return Alpha El Alfabeto completo utilizado
+     */
+    public ArrayList<String> getAlpha() {
+        return Alpha;
     }
 
     /**
-     * Método que termina de manera instantánea el proceso de análisis y 
-     * traducción cuando se produce un error. <br><br>
-     * 
-     * Inicialmente, el método solo consiste en llamar a la primitiva 
-     * <code>System.exit(0)</code>, pero permite encapsular el comportamiento 
-     * de esta acción para modificarla en el futuro de una sola vez. 
+     * Obtener la expresión regular
+     * @return regex Expresión regular
      */
-    private void abort() {
-        // Do nothing
-    }
-    
-    /**
-     * Llamada al analizador léxico para obtener el siguiente caracter de la 
-     * cadena de entrada <br><br>
-     * 
-     * Si el analizador léxico encuentra un error (como que el caracter no 
-     * pertenece al alfabeto) se atrapa la excepción, se informa en la salida y
-     * se aborta el análisis. <br><br>
-     * @return Token que contiene el símbolo siguiente a procesar
-     */
-    private Token nextSymbol() throws Exception{
-        Token result = null; 
-        result = this.lexico.next();
-        return result;        
-    }
-    
-    public Automata traducir() {
-        this.automata = this.RE();
-        
-        if (!this.isHayErrores()) {
-            if (!(preanalisis.getTipo().equals("FIN"))) {
-                this.hayErrores = true; 
-                this.errMsg = "Quedaron caracteres sin analizar debido al siguiente Token no esperado["+
-                        this.getPosicion()+"]: "+preanalisis.getValor();
-            }
-        }
-        
-        return this.automata;
-    }
-    
-    /**
-     * Método correspondiente al símbolo inicial de la gramática de expresiones 
-     * regulares. <br><br>
-     * 
-     * Las producciones que pueden ser vacío, retornan un valor null en ese caso. 
-     * Las demás producciones lanzan excepciones que se trasladan a los ámbitos 
-     * de llamada superiores
-     * 
-     * @TODO
-     * - Implementar Exception Management: Acciones a tomar a partir de los 
-     *   distintos tipos de errores
-     * 
-     * @return Autoamata producido por la producción &nbsp RE => resimple A.  
-     *
-     */
-    private Automata RE() {
-        
-        // automatas auxiliares de producciones llamadas
-        Automata Aux1 = null;
-        Automata Aux2;
-        
-        try {
-
-            Aux1 = this.resimple();
-            Aux2 = this.A();
-
-            if (Aux2 != null) {
-                Aux1.thompson_or(Aux2);
-            }
-        } catch (Exception ex) {
-            
-            this.hayErrores = true;  
-            this.errMsg =  "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n";
-            System.out.println(this.getErrMsg());
-            this.abort();
-        }
-      
-        if (!(this.hayErrores) ){
-            this.setAutomata(Aux1); // Actualizar el Automata Global
-            Aux1.setAlpha(this.alfabeto);
-            Aux1.setRegex(this.regex);
-        }
-        return Aux1;
-    }
-
-    /**
-     * Producción A, que permite la recursión necesaria para producir cadenas 
-     * de expresiones regulares separadas por el operador "|" (disyunción) <br><br>
-     * 
-     * @return null si derivó en vacío, en caso contrario, el automata generado
-     * @throws exceptions.SyntaxError
-     */
-    private Automata A() throws Exception {
-        try {            
-            Token or = new Token("|");            
-            
-            if (preanalisis.compareTo(or) == 0) {    
-                this.Match("|"); // si preanalisis es el esperado, consumimos, 
-                return RE();            
-            } else {                 
-                return null;    // si es vacío se analiza en otra producción
-            }         
-        } catch (Exception ex) {
-            this.hayErrores = true;  
-            throw new Exception("Error de sintaxis en el símbolo ["+this.getPosicion()+"]: se esperaba '|' en lugar de -> " + this.preanalisis.getValor());
-        }
-    }
-    
-    /**
-     * Producción resimple
-     * 
-     * @return Automata producido por la producción
-     * @throws exceptions.SyntaxError
-     * @throws exceptions.LexicalError
-     */
-    private Automata resimple() throws Exception {
-        Automata Aux1 = this.rebasico(); 
-        Automata Aux2 = this.B();       
-        
-        if (Aux2 != null) {
-            Aux1.thompson_concat(Aux2);
-        }
-        
-        return Aux1;
-    }
-
-    /**
-     * Producción rebasico. 
-     * @return Automata generado luego de derivar la producción
-     */
-    private Automata rebasico() throws Exception {
-        
-        Automata Aux1 = list();
-
-        if (Aux1 != null) {
-            char operator = op();
-
-            switch (operator) {
-                case '*':
-                    Aux1.thompson_kleene();
-                    break;
-                case '+':
-                    Aux1.thompson_plus();
-                    break;
-                case '?':
-                    Aux1.thompson_cerouno();
-                    break;
-                case 'E':
-                    break;
-            }
-        } /*else if (preanalisis.) {
-            throw new SyntaxError("se esperaba un símbolo del lenguaje y se encontró: "
-                            +this.preanalisis.getValor(),this.getPosicion());            
-        }*/
-
-        return Aux1;
-    }
-    
-    /**
-     * La producción B debe verificar si preanalisis está en el conjunto primero
-     * de resimple, y si está, volver a ejecutar resimple. En caso contrario debe
-     * retornar null. <br> <br>
-     * 
-     * El conjunto Primero de resimple es {"(",[alpha]}. 
-     * 
-     * @return Automata el automata producido por la producción, o null si la 
-     *                  producción deriva en vacío. 
-     * @throws exceptions.SyntaxError
-     * @throws exceptions.LexicalError
-     */
-    private Automata B() throws Exception {
-        
-        String current = preanalisis.getValor();
-        Automata result = null;
-       
-        if ( !(preanalisis.getTipo().equals("FIN")) &&
-             (this.alfabeto.contains(current) || current.compareTo("(")==0)
-           ) {
-            result = this.resimple();
-        }
-        
-        return result;
-    }
-    
-    private Automata list() throws Exception {
-        
-        Token grupofirst = new Token("(");
-        
-        if(preanalisis.compareTo(grupofirst) == 0) {
-            return this.grupo();            
-        } else {
-            return this.leng();
-        }
-    }
-    
-    private char op() throws Exception {
-        char operador = 'E';        
-        
-        if (preanalisis.getValor().compareTo("") != 0) {
-            operador = preanalisis.getValor().charAt(0);
-
-            switch (operador) {
-                case '*':
-                    this.Match("*");
-                    break;
-                case '+':
-                    this.Match("+");
-                    break;
-                case '?':
-                    this.Match("?");
-                    break;
-                default:
-                    return 'E';
-            }
-        }
-        return operador;
-    }
-    
-    private Automata grupo() throws Exception {
-        try {
-            this.Match("(");
-        } catch (Exception ex) {
-            this.hayErrores = true;  
-            throw new Exception("se esperaba el símbolo -> '('" );
-
-        }
-        
-        Automata Aux1 = this.RE();
-        
-        try {
-            this.Match(")");
-        } catch (Exception ex) {
-            this.hayErrores = true;  
-            throw new Exception("se esperaba el símbolo -> ')'");
-        }
-        
-        return Aux1;
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    private Automata leng() throws Exception {
-        Automata nuevo = null;
-        try {
-            if (!(preanalisis.getTipo().equals("FIN")) ){
-                nuevo = new Automata(preanalisis.getValor(),TipoAutomata.AFN);
-                this.Match(preanalisis.getValor());
-            }
-        } catch (Exception ex) {
-            this.hayErrores = true;  
-            throw new Exception("Error Léxico en [" + this.getPosicion() + "]: el símbolo no pertenece al alfabeto");
-        
-        }
-        
-        return nuevo;
-    }
-    
-    
-    /* ----------------------- GETTERS Y SETTERS ------------------------ */
-    public String getRegex() {
+    public StringBuffer getRegex() {
         return regex;
     }
 
-    public void setRegex(String regex) {
-        this.setPosicion(0);
-        this.regex = regex;        
-        this.lexico = new Lex(regex, alfabeto); // creamos el analizador léxico
-
-        try {
-            // creamos el analizador léxico
-            this.preanalisis = nextSymbol(); // obtenemos el primer símbolo desde el analizador léxico
-        } catch (Exception ex) {
-            this.hayErrores = true;
-            this.errMsg = 
-                    "Se produjo un error FATAL en el traductor. La generación del AFN no puede continuar\n"+
-                    "--> "+ex.getMessage();
-            
-            System.out.println(this.getErrMsg());
-            this.abort();
-        }
-        automata = new Automata();
-    }
-
-    public Token getPreanalisis() {
-        return preanalisis;
-    }
-
-    public void setPreanalisis(Token preanalisis) {
-        this.preanalisis = preanalisis;
-    }
-
-    public ArrayList<String> getAlfabeto() {
-        return alfabeto;
-    }
-
-    public void setAlfabeto(ArrayList<String> alfabeto) {
-        this.alfabeto = alfabeto;
-    }
-
-    public void setAlfabetoString(String alpha) {
-        char a[] = new char[alpha.length()];
-        a = alpha.toCharArray();
-        java.util.Arrays.sort(a);
-       this.alfabeto.removeAll(alfabeto);
-       for (int i = 0; i < alpha.length(); i++) {
-            if (! this.alfabeto.contains(a[i]+ "")) {
-                this.alfabeto.add(a[i]+ "");
-            }
-        }
-    }
-    public Automata getAutomata() {
-        return automata;
-    }
-
-    public void setAutomata(Automata Aut) {
-        this.automata = Aut;
-    }
-
-    public int getPosicion() {
-        return posicion;
-    }
-
-    public void setPosicion(int posicion) {
-        this.posicion = posicion;
+    
+    /**
+     * Obtener la expresión regular (en String)
+     * @return regex Expresión regular, como un String
+     */
+    public String getRegexString() {
+        return regex.toString();
     }
     
-    public void incPosicion() {
-        this.setPosicion(this.posicion+1);
-    }
-
-    public boolean isHayErrores() {
-        return hayErrores;
-    }
-
-    public String getErrMsg() {
-        return errMsg;
+    /**
+     * Obtener caracteres especiales
+     * @return specials Los operadores y simbolos especiales del lenguaje
+     */
+    public String getSpecials() {
+        return specials;
     }
 }

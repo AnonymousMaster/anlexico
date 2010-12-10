@@ -1,4 +1,4 @@
-package afgenjava;
+package Automata;
 
 import java.util.ArrayList;
 import traductor.Token;
@@ -156,6 +156,7 @@ public class Estado implements Comparable<Estado> {
      * @return El estado destino al que va desde este estado por el token a
      */
     public Estado estadoDestinoString(String a){
+       
         for(Enlace x: enlaces){
             if(x.getEtiqueta().compareTo(a)== 0){
                 return x.getDestino();

@@ -1,4 +1,4 @@
-package afgenjava;
+package Automata;
 
 /**
  * La clase <b> Enlace </b> representa a los arcos que conectan los estados 
@@ -11,8 +11,6 @@ package afgenjava;
  *   <li>Etiqueta (símbolo del alfabeto)</li>
  * </ul>
  * 
- * @author Cristhian Parra ({@link cdparra@gmail.com})
- * @author Fernando Mancía ({@link fernandomancia@gmail.com})
  */
 public class Enlace implements Comparable<Enlace> {
     
@@ -51,7 +49,7 @@ public class Enlace implements Comparable<Enlace> {
         this.destino = destino;
         this.etiqueta = label;
         
-        if (label.compareTo(CONSTANS.getVacio())==0) {
+        if (label.compareTo("(vacio)")==0) {
             this.vacio = true;
         } else {
             this.vacio = false;
